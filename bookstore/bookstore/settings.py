@@ -39,8 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'drf_yasg',
     'author',
-    'rest_framework'
-,
+    'rest_framework',
+    'book',
+    'User',
+
 ]
 
 MIDDLEWARE = [
@@ -139,3 +141,6 @@ SWAGGER_SETTINGS = {
     },
     
 }
+import os
+MEDIA_ROOT =os.path.join(BASE_DIR,'uploads')
+MEDIA_URL = '/uploads/'
