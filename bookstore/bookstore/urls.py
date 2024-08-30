@@ -23,9 +23,15 @@ from django.contrib import admin
 from django.urls import path,re_path,include
 # from django.urls import re_path
 from django.conf import settings
+from rest_framework import permissions
 from django.conf.urls.static import static
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 
 
@@ -39,7 +45,7 @@ schema_view = get_schema_view(
       license=openapi.License(name="BSD License"),
    ),
    public=True,
-#    permission_classes=(permissions.AllowAny,),
+   permission_classes=(permissions.AllowAny,),
 )
 
 urlpatterns = [
@@ -50,6 +56,8 @@ urlpatterns = [
      path("api/author/",include('author.urls')),
      path("api/book/",include("book.urls")),
      path("api/User/",include("User.urls")),
+     path('api/token/',swagger_auto_schema(method='post',security=[])(TokenObtainPairView.as_view()),name='token_obtain_pair'),
+    path('api/token/refresh/',swagger_auto_schema(method='post',security=[])(TokenRefreshView.as_view()),name='token_refresh'),
  
    
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

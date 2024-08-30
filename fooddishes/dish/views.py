@@ -6,12 +6,17 @@ from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework import status,parsers
 from rest_framework.decorators import action
+from rest_framework import permissions
+from rest_framework_simplejwt.authentication import JWTAuthentication
  
 # Create your views here.
 class DishViewset(ModelViewSet):
     queryset = Dishes.objects.all()
     serializer_class = DishSerializer
     parser_classes = (parsers.FormParser,parsers.MultiPartParser,parsers.FileUploadParser)
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -100,7 +105,7 @@ class DishViewset(ModelViewSet):
                 'status':APIException.status.code
             })
 #update all fields of dish
-    def update(self,request):
+    def update(self,request,pk=None):
         try:
             dish_objs = self.get_object()
             serializer = self.get_serializer(dish_objs,data=request.data,partial=False)
@@ -125,7 +130,7 @@ class DishViewset(ModelViewSet):
                 'status':APIException.status.code
             })
     #update specifie
-    def partial_update(self,request):
+    def partial_update(self,request,pk=None):
         try:
             dish_objs = self.get_object()
             serializer = self.get_serializer(dish_objs,data=request.data,partial=True)

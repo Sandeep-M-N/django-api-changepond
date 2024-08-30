@@ -4,11 +4,15 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import permissions
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 # create your views here
 class CategoryViewSet(ModelViewSet):
     queryset=Category.objects.all()
     serializer_class=CategorySerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -78,60 +82,55 @@ class CategoryViewSet(ModelViewSet):
                 'status':APIException.status.code
             })
  
-#update all fields of category
-    def update(self,request):
+ # Update all fields of category
+    def update(self, request, pk=None):  # Corrected to include 'pk'
         try:
             category_objs = self.get_object()
-            serializer = self.get_serializer(category_objs,data=request.data,partial=False)
+            serializer = self.get_serializer(category_objs, data=request.data, partial=False)
             if not serializer.is_valid():
                 print(serializer.errors)
                 return Response({
                     'status': status.HTTP_400_BAD_REQUEST,
-                    'data':serializer.errors,
-                    'message':'Inavlid Data'
+                    'data': serializer.errors,
+                    'message': 'Invalid Data'
                 })
             serializer.save()
             return Response({
-                    'status': status.HTTP_200_OK,
-                    'data':serializer.data,
-                    'message': 'Category Updated Successfully'
-                })
- 
+                'status': status.HTTP_200_OK,
+                'data': serializer.data,
+                'message': 'Category Updated Successfully'
+            })
         except Exception as e:
             print(e)
             raise APIException({
-                'message':APIException.default_detail,
-                'status':APIException.status.code
+                'message': APIException.default_detail,
+                'status': APIException.status_code
             })
- 
- 
- 
-#update specific category
-    def partial_update(self,request):
+
+ # Update specific fields of category
+    def partial_update(self, request, pk=None):  # Corrected to include 'pk'
         try:
             category_objs = self.get_object()
-            serializer = self.get_serializer(category_objs,data=request.data,partial=True)
+            serializer = self.get_serializer(category_objs, data=request.data, partial=True)
             if not serializer.is_valid():
                 print(serializer.errors)
                 return Response({
                     'status': status.HTTP_400_BAD_REQUEST,
-                    'data':serializer.errors,
-                    'message':'Inavlid Data'
+                    'data': serializer.errors,
+                    'message': 'Invalid Data'
                 })
             serializer.save()
             return Response({
-                    'status': status.HTTP_200_OK,
-                    'data':serializer.data,
-                    'message': 'Category Partial Updated Successfully'
-                })
- 
+                'status': status.HTTP_200_OK,
+                'data': serializer.data,
+                'message': 'Category Partially Updated Successfully'
+            })
         except Exception as e:
             print(e)
             raise APIException({
-                'message':APIException.default_detail,
-                'status':APIException.status.code
+                'message': APIException.default_detail,
+                'status': APIException.status_code
             })
- 
     def destroy(self,request,pk):
         try:
             id=pk
